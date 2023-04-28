@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "rootDirs": [
+            "src/common/*",
+            "src/client/*"
+        ],
+        "outDir": "dist/client/js",
+        "target": "ESNext"
+    },
+    "exclude": [
+        "src/server"
+    ]
+}

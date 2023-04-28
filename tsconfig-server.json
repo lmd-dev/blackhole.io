@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "rootDirs": [
+            "src/common/**/*",
+            "src/server/**/*"
+        ],
+        "outDir": "dist/server",
+        "target": "ES6",
+        "moduleResolution": "node",
+        "module": "CommonJS"
+    },
+    "exclude": [
+        "src/client"
+    ]
+}
