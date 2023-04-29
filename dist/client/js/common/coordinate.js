@@ -22,10 +22,18 @@ export class Coordinate {
         if (data)
             this.fromData(data);
     }
+    /**
+     * Imports data from JS Object
+     * @param {CoordinateData} data Data to import
+     */
     fromData(data) {
         this._x = data.x ?? this._x;
         this._y = data.y ?? this._y;
     }
+    /**
+     * Exports data to JS object
+     * @returns {CoordinateData} Exported data
+     */
     toData() {
         return {
             x: this.x,

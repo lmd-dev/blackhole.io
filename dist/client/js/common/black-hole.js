@@ -3,11 +3,11 @@ import { Vector } from "./vector.js";
 /**
  * Represents a blackhole
  */
-class BlackHole {
+export class BlackHole {
     //Default radius of a Blackhole
     static DEFAULT_RADIUS = 15;
     //Default speed of a Blackhole
-    static DEFAULT_SPEED = 0.01;
+    static DEFAULT_SPEED = 0.05;
     //Name if the player controlling the blackhole
     _name;
     get name() { return this._name; }
@@ -50,6 +50,10 @@ class BlackHole {
         this._attractionVectors = [];
         this._radius = data.radius;
     }
+    /**
+     * Imports data from JS Object
+     * @param {BlackHoleData} data Data to import
+     */
     fromData(data) {
         this._name = data.name ?? this._name;
         this._color = data.color ?? this._color;
@@ -62,6 +66,10 @@ class BlackHole {
         this._attractionVectors.length = 0;
         this._attractionVectors.push(...data.attractionVectors?.map((vector) => { return new Vector(vector); }) ?? []);
     }
+    /**
+     * Exports data to JS object
+     * @returns {BlackHoleData} Exported data
+     */
     toData() {
         return {
             name: this.name,
@@ -97,4 +105,3 @@ class BlackHole {
         this._radius = Math.sqrt(Math.pow(this.radius, 2) + Math.pow(blackhole.radius, 2));
     }
 }
-export { BlackHole };

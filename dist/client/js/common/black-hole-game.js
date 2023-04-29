@@ -32,6 +32,10 @@ export class BlackHoleGame {
         this._universe = new Universe(width, height);
         this._blackholes.clear();
     }
+    /**
+     * Adds new player to the game
+     * @param {string} playerName Name of the player
+     */
     addPlayer(playerName) {
         const blackhole = new BlackHole({
             name: playerName,
@@ -44,12 +48,20 @@ export class BlackHoleGame {
         });
         this.addBlackholes([blackhole]);
     }
+    /**
+     * Generates random coordinate
+     * @returns {Coordinate} Randomly generated coordinate
+     */
     getRandomCoordinate() {
         return new Coordinate({
             x: Math.floor(Math.random() * (this.universe?.width ?? 0)),
             y: Math.floor(Math.random() * (this.universe?.height ?? 0))
         });
     }
+    /**
+     * Generates random vector
+     * @returns { Vector } Randomly generated vector
+     */
     getRandomDirection() {
         const point = new Coordinate({ x: 1, y: 0 });
         point.rotate(new Coordinate(), Math.random() * Math.PI * 2);

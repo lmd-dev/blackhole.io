@@ -5,12 +5,6 @@ exports.Vector = void 0;
  * Represents a vector
  */
 class Vector {
-    get vx() { return this._vx; }
-    ;
-    set vx(value) { this._vx = value; }
-    get vy() { return this._vy; }
-    ;
-    set vy(value) { this._vy = value; }
     /**
      * Constructor
      * @param {VectorData} data Initialization Data
@@ -21,11 +15,25 @@ class Vector {
         if (data)
             this.fromData(data);
     }
+    get vx() { return this._vx; }
+    ;
+    set vx(value) { this._vx = value; }
+    get vy() { return this._vy; }
+    ;
+    set vy(value) { this._vy = value; }
+    /**
+     * Imports data from JS Object
+     * @param {VectorData} data Data to import
+     */
     fromData(data) {
         var _a, _b;
         this._vx = (_a = data.vx) !== null && _a !== void 0 ? _a : this._vx;
         this._vy = (_b = data.vy) !== null && _b !== void 0 ? _b : this._vy;
     }
+    /**
+     * Exports data to JS object
+     * @returns {VectorData} Exported data
+     */
     toData() {
         return {
             vx: this.vx,

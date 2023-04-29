@@ -30,7 +30,7 @@ export class ViewGame {
      */
     initMainEvents() {
         window.addEventListener("resize", () => { this.resize(); });
-        this.canvas.addEventListener("mousemove", (event) => {
+        this.canvas.addEventListener("click", (event) => {
             this.movePlayerToMousePointer(event);
         });
     }
@@ -75,10 +75,12 @@ export class ViewGame {
         if (this.controllerGame.playerName !== null) {
             if (this.lastUpdate) {
                 const elapsedTime = performance.now() - this.lastUpdate;
+                this.lastUpdate = performance.now();
                 this.controllerGame.game.update(elapsedTime);
             }
+            else
+                this.lastUpdate = performance.now();
             this.draw();
-            this.lastUpdate = performance.now();
         }
         requestAnimationFrame(() => {
             this.update();
@@ -89,20 +91,64 @@ export class ViewGame {
      */
     draw() {
         try {
-            const player = this.controllerGame.getPlayer();
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.ctx.lineWidth = 2;
-            const blackholes = this.controllerGame.game.blackholes;
-            const center = player.coordinate;
             this.ctx.save();
             this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
-            blackholes.forEach((blackhole) => {
-                this.drawBlackHole(blackhole, center);
-            });
+            this.drawBackground();
+            this.drawBlackHoles();
             this.ctx.restore();
         }
         catch (e) {
-            //console.trace(e);
+            console.trace(e);
+        }
+    }
+    /**
+     * Draws the background of the scene
+     */
+    drawBackground() {
+        try {
+            const player = this.controllerGame.getPlayer();
+            const center = player.coordinate;
+            const top = center.y - this.canvas.height / 2;
+            const left = center.x - this.canvas.width / 2;
+            const topCanvas = -this.canvas.height / 2;
+            const bottomCanvas = topCanvas + this.canvas.height;
+            const leftCanvas = -this.canvas.width / 2;
+            const rightCanvas = leftCanvas + this.canvas.width;
+            const gridGap = 300;
+            let x = leftCanvas + gridGap - left % gridGap;
+            let y = topCanvas + gridGap - top % gridGap;
+            this.ctx.strokeStyle = "#222";
+            while (y < bottomCanvas) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(leftCanvas, y);
+                this.ctx.lineTo(rightCanvas, y);
+                this.ctx.stroke();
+                y += gridGap;
+            }
+            while (x < rightCanvas) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(x, topCanvas);
+                this.ctx.lineTo(x, bottomCanvas);
+                this.ctx.stroke();
+                x += gridGap;
+            }
+        }
+        catch (e) {
+        }
+    }
+    /**
+     * Draws blackholes on the canvas
+     */
+    drawBlackHoles() {
+        try {
+            const player = this.controllerGame.getPlayer();
+            const center = player.coordinate;
+            this.controllerGame.game.blackholes.forEach((blackhole) => {
+                this.drawBlackHole(blackhole, center);
+            });
+        }
+        catch (e) {
         }
     }
     /**
@@ -111,20 +157,19 @@ export class ViewGame {
      * @param {Coordinate} center Center of the scene
      */
     drawBlackHole(blackhole, center) {
-        this.ctx.strokeStyle = blackhole.color;
         const x = Math.floor(blackhole.coordinate.x - center.x);
         const y = Math.floor(blackhole.coordinate.y - center.y);
         const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, blackhole.radius);
         gradient.addColorStop(0, "#000");
         gradient.addColorStop(0.7, "#000");
-        gradient.addColorStop(1, "#FFF");
+        gradient.addColorStop(1, blackhole.color);
         this.ctx.fillStyle = gradient;
         this.ctx.beginPath();
         this.ctx.arc(x, y, Math.floor(blackhole.radius), 0, Math.PI * 2);
         this.ctx.fill();
-        this.ctx.stroke();
-        const { width } = this.ctx.measureText(blackhole.name);
-        this.ctx.fillStyle = "#000";
-        this.ctx.fillText(blackhole.name, x - width / 2, y - blackhole.radius - 10);
+        const str = `${blackhole.name} - ${blackhole.coordinate.x.toFixed(0)} ; ${blackhole.coordinate.y.toFixed(0)}`;
+        const { width } = this.ctx.measureText(str);
+        this.ctx.fillStyle = blackhole.color;
+        this.ctx.fillText(str, x - width / 2, y - blackhole.radius - 10);
     }
 }

@@ -1,6 +1,8 @@
 import { BlackHoleGame } from "../../common/black-hole-game.js"
 import { BlackHole } from "../../common/black-hole.js"
 import { Coordinate } from "../../common/coordinate.js"
+import { PlayerCoordinateData } from "../../common/player-coordinates-data.js";
+import { PlayerDirectionData } from "../../common/player-direction-data.js";
 import { Notifier } from "../models/notifier.js"
 import { serviceWebSocket } from "../service/service-websocket.js";
 
@@ -37,7 +39,8 @@ export class ControllerGame extends Notifier
     {
         serviceWebSocket.addEventListener("world sync", (data) => { this.synchronizeWorld(data); });
         serviceWebSocket.addEventListener("new player", (data) => { this.addPlayer(data); });
-        serviceWebSocket.addEventListener("player sync", (data) => { this.synchronizePlayer(data); });
+        serviceWebSocket.addEventListener("sync player direction", (data) => { this.synchronizePlayerDirection(data); });
+        serviceWebSocket.addEventListener("sync players coordinates", (data) => { this.synchronizePlayersCoordinates(data); });
     }
 
     /**
@@ -76,8 +79,11 @@ export class ControllerGame extends Notifier
 
         this.game.setBlackholeDirection(this.playerName, target);
 
+        const player = this.game.getBlackhole(this.playerName);
+
         serviceWebSocket.emit("player sync", JSON.stringify({
-            player: this.game.getBlackhole(this.playerName).toData()
+            playerName: player.name,
+            direction: player.direction.toData()
         }));
     }
 
@@ -126,21 +132,44 @@ export class ControllerGame extends Notifier
      * Synchronizes data of a player from the server
      * @param {string} jsondata JSON formated data about the player to synchronize 
      */
-    private synchronizePlayer(jsondata: string)
+    private synchronizePlayerDirection(jsondata: string)
     {
         try {
-            const data = JSON.parse(jsondata);
+            const data: PlayerDirectionData = JSON.parse(jsondata);
 
-            const player = this.game.getBlackhole(data.player.name);
-            player?.fromData(data.player);
+            if(data.playerName === this.playerName)
+                return;
 
-            console.log(player);
+            const player = this.game.getBlackhole(data.playerName);
+            player.direction.fromData(data.direction);
         
-            this.notify();
+            this.notify()
         }
         catch(e)
         {
             console.log(e);
+        }
+    }
+
+    private synchronizePlayersCoordinates(jsondata)
+    {
+        try {
+            const data: PlayerCoordinateData[] = JSON.parse(jsondata);
+
+            data.forEach((player) => {
+                try {
+                    const blackhole = this.game.getBlackhole(player.playerName);
+                    blackhole.coordinate.fromData(player.coordinate);
+                }
+                catch(e)
+                {
+
+                }
+            });
+        }
+        catch(e)
+        {
+
         }
     }
 };

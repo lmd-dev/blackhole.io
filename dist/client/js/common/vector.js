@@ -22,10 +22,18 @@ export class Vector {
         if (data)
             this.fromData(data);
     }
+    /**
+     * Imports data from JS Object
+     * @param {VectorData} data Data to import
+     */
     fromData(data) {
         this._vx = data.vx ?? this._vx;
         this._vy = data.vy ?? this._vy;
     }
+    /**
+     * Exports data to JS object
+     * @returns {VectorData} Exported data
+     */
     toData() {
         return {
             vx: this.vx,

@@ -25,21 +25,34 @@ class ServiceWebSocket
     /**
      * try to connects to the server
      */
-    private connect()
+    private async connect()
     {
-        this.socket = new WebSocket("ws://localhost:3000");
+        const response = await fetch("/api/websocket-url");
 
-        this.socket.addEventListener("message", (event) => {
-            try {
-                const messageData = JSON.parse(event.data);
-                
-                this.events.get(messageData.type)?.(messageData.data);
-            }
-            catch(e)
+        if (response.ok)
+        {
+            const url = await response.text();
+
+            this.socket = new WebSocket(url);
+
+            this.socket.addEventListener("message", (event) =>
             {
-                console.log(e);
-            }
-        })
+                try
+                {
+                    const messageData = JSON.parse(event.data);
+
+                    this.events.get(messageData.type)?.(messageData.data);
+                }
+                catch (e)
+                {
+                    console.log(e);
+                }
+            });
+        }
+        else
+        {
+            console.error("Unable to get websocket url.");
+        }
     }
 
     /**
@@ -60,8 +73,8 @@ class ServiceWebSocket
     public emit(type: string, data: string)
     {
         this.socket?.send(JSON.stringify({
-            type: type, 
-            data: data 
+            type: type,
+            data: data
         }));
     }
 }

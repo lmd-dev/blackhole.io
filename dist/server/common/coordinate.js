@@ -5,12 +5,6 @@ exports.Coordinate = void 0;
  * Represents a coordinate
  */
 class Coordinate {
-    get x() { return this._x; }
-    ;
-    set x(value) { this._x = value; }
-    get y() { return this._y; }
-    ;
-    set y(value) { this._y = value; }
     /**
      * Constructor
      * @param {CoordinateData} data Initialization data
@@ -21,11 +15,25 @@ class Coordinate {
         if (data)
             this.fromData(data);
     }
+    get x() { return this._x; }
+    ;
+    set x(value) { this._x = value; }
+    get y() { return this._y; }
+    ;
+    set y(value) { this._y = value; }
+    /**
+     * Imports data from JS Object
+     * @param {CoordinateData} data Data to import
+     */
     fromData(data) {
         var _a, _b;
         this._x = (_a = data.x) !== null && _a !== void 0 ? _a : this._x;
         this._y = (_b = data.y) !== null && _b !== void 0 ? _b : this._y;
     }
+    /**
+     * Exports data to JS object
+     * @returns {CoordinateData} Exported data
+     */
     toData() {
         return {
             x: this.x,

@@ -9,12 +9,6 @@ const vector_js_1 = require("./vector.js");
  * Represents the core of the game
  */
 class BlackHoleGame {
-    get universe() { return this._universe; }
-    ;
-    get blackholes() { return this._blackholes; }
-    ;
-    get playersCount() { return this.blackholes.size; }
-    ;
     /**
      * Constructor
      */
@@ -22,6 +16,12 @@ class BlackHoleGame {
         this._universe = null;
         this._blackholes = new Map();
     }
+    get universe() { return this._universe; }
+    ;
+    get blackholes() { return this._blackholes; }
+    ;
+    get playersCount() { return this.blackholes.size; }
+    ;
     /**
      * Prepares a new game
      * @param {number} width max width of the universe
@@ -31,6 +31,10 @@ class BlackHoleGame {
         this._universe = new universe_js_1.Universe(width, height);
         this._blackholes.clear();
     }
+    /**
+     * Adds new player to the game
+     * @param {string} playerName Name of the player
+     */
     addPlayer(playerName) {
         const blackhole = new black_hole_js_1.BlackHole({
             name: playerName,
@@ -43,6 +47,10 @@ class BlackHoleGame {
         });
         this.addBlackholes([blackhole]);
     }
+    /**
+     * Generates random coordinate
+     * @returns {Coordinate} Randomly generated coordinate
+     */
     getRandomCoordinate() {
         var _a, _b, _c, _d;
         return new coordinate_js_1.Coordinate({
@@ -50,6 +58,10 @@ class BlackHoleGame {
             y: Math.floor(Math.random() * ((_d = (_c = this.universe) === null || _c === void 0 ? void 0 : _c.height) !== null && _d !== void 0 ? _d : 0))
         });
     }
+    /**
+     * Generates random vector
+     * @returns { Vector } Randomly generated vector
+     */
     getRandomDirection() {
         const point = new coordinate_js_1.Coordinate({ x: 1, y: 0 });
         point.rotate(new coordinate_js_1.Coordinate(), Math.random() * Math.PI * 2);

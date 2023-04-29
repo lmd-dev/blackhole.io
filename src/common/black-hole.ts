@@ -20,7 +20,7 @@ export class BlackHole
     public static readonly DEFAULT_RADIUS: number = 15;
 
     //Default speed of a Blackhole
-    public static readonly DEFAULT_SPEED: number = 0.01;
+    public static readonly DEFAULT_SPEED: number = 0.05;
 
     //Name if the player controlling the blackhole
     private _name: string;

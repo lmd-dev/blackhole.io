@@ -4,6 +4,9 @@ exports.Application = void 0;
 const controller_game_1 = require("./controller-game");
 const server_1 = require("./server");
 class Application {
+    /**
+     * Constructor
+     */
     constructor() {
         this.server = new server_1.Server();
         this.controllerGame = new controller_game_1.ControllerGame(this.server);

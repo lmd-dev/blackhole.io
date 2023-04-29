@@ -1,5 +1,7 @@
-import Fastify, { FastifyInstance, FastifyRequest } from "fastify";
+import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import fastifyWebSocket from "@fastify/websocket";
+import fastifyStatic from "@fastify/static";
+import * as path from "path";
 
 type MessageData = {
     type: string,
@@ -36,10 +38,40 @@ export class Server
 
         this.fastify = Fastify();
 
+        this.initStaticFiles();
+        this.initAPIRoutes();
+        this.initWebSocketRoutes();
+    }
+
+    /**
+     * Initializes static files access
+     */
+    private initStaticFiles()
+    {
+        this.fastify.register(fastifyStatic, {
+            root: path.join(__dirname, "..", "..", "client")
+        });
+    }
+
+    /**
+     * Initailizes routes for the available server API
+     */
+    private initAPIRoutes()
+    {
+        this.fastify.get("/api/websocket-url", (request: FastifyRequest, reply: FastifyReply) => {
+            reply.send(`ws://localhost:${this.getPort()}/ws`);
+        })
+    }
+
+    /**
+     * Initializes WebSocket routes
+     */
+    private initWebSocketRoutes()
+    {
         this.fastify.register(fastifyWebSocket);
     
         this.fastify.register(async (fastify) => {
-            fastify.get('/', { websocket: true }, (connection , req) => {
+            fastify.get('/ws', { websocket: true }, (connection , req) => {
                 const socketId = ++this.nextSocketId;
 
                 this.clients.set(socketId, connection.socket);
@@ -56,9 +88,27 @@ export class Server
      */
     public listen()
     {
-        this.fastify.listen({port: 3000 }, () => {
-            console.log("Server is listening !");
+        const port = this.getPort();
+
+        this.fastify.listen({ port }, (error) => {
+            if(error)
+            {
+                console.log("Server::listen - Error");
+                console.log(error);
+                return;
+            }
+
+            console.log(`Server is listening on port ${port}`);
         });
+    }
+
+    /**
+     * Returns the port listened by the webserver 
+     * @returns {number}The port listened by the webserver
+     */
+    private getPort(): number
+    {
+        return parseInt(process.env.WEBSERVER_PORT ?? "80");
     }
 
     /**

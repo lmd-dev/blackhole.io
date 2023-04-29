@@ -19,6 +19,10 @@ export class Universe {
         this._width = width;
         this._height = height;
     }
+    /**
+     * Exports data to JS object
+     * @returns {UniverseData} Exported data
+     */
     toData() {
         return {
             width: this.width,

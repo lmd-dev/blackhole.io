@@ -7,6 +7,20 @@ const vector_js_1 = require("./vector.js");
  * Represents a blackhole
  */
 class BlackHole {
+    /**
+     * Constructor
+     * @param {BlackHoleData} data Initialization data
+     */
+    constructor(data) {
+        this._name = data.name;
+        this._color = data.color;
+        this._coordinate = new coordinate_js_1.Coordinate(data.coordinate);
+        this._direction = new vector_js_1.Vector(data.direction);
+        this._direction.normalize();
+        this._speed = data.speed;
+        this._attractionVectors = [];
+        this._radius = data.radius;
+    }
     get name() { return this._name; }
     ;
     get color() { return this._color; }
@@ -22,19 +36,9 @@ class BlackHole {
     get radius() { return this._radius; }
     ;
     /**
-     * Constructor
-     * @param {BlackHoleData} data Initialization data
+     * Imports data from JS Object
+     * @param {BlackHoleData} data Data to import
      */
-    constructor(data) {
-        this._name = data.name;
-        this._color = data.color;
-        this._coordinate = new coordinate_js_1.Coordinate(data.coordinate);
-        this._direction = new vector_js_1.Vector(data.direction);
-        this._direction.normalize();
-        this._speed = data.speed;
-        this._attractionVectors = [];
-        this._radius = data.radius;
-    }
     fromData(data) {
         var _a, _b, _c, _d, _e, _f;
         this._name = (_a = data.name) !== null && _a !== void 0 ? _a : this._name;
@@ -48,6 +52,10 @@ class BlackHole {
         this._attractionVectors.length = 0;
         this._attractionVectors.push(...(_f = (_e = data.attractionVectors) === null || _e === void 0 ? void 0 : _e.map((vector) => { return new vector_js_1.Vector(vector); })) !== null && _f !== void 0 ? _f : []);
     }
+    /**
+     * Exports data to JS object
+     * @returns {BlackHoleData} Exported data
+     */
     toData() {
         return {
             name: this.name,
@@ -83,8 +91,8 @@ class BlackHole {
         this._radius = Math.sqrt(Math.pow(this.radius, 2) + Math.pow(blackhole.radius, 2));
     }
 }
+exports.BlackHole = BlackHole;
 //Default radius of a Blackhole
 BlackHole.DEFAULT_RADIUS = 15;
 //Default speed of a Blackhole
-BlackHole.DEFAULT_SPEED = 0.01;
-exports.BlackHole = BlackHole;
+BlackHole.DEFAULT_SPEED = 0.05;

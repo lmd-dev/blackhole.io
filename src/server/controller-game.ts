@@ -1,4 +1,6 @@
 import { BlackHoleGame } from "../common/black-hole-game";
+import { PlayerCoordinateData } from "../common/player-coordinates-data";
+import { PlayerDirectionData } from "../common/player-direction-data";
 import { Server } from "./server";
 
 /**
@@ -23,10 +25,12 @@ export class ControllerGame
     {
         this.server = server;
         this.game = new BlackHoleGame();
-        this.game.newGame(300, 200);
+        this.game.newGame(5000, 3000);
         this.lastUpdate = 0;
 
         this.initWebSocketServerEvents();
+
+        setInterval(() => { this.syncCoordinates(); }, 1000);
     }
 
     /**
@@ -50,8 +54,6 @@ export class ControllerGame
 
         this.game.addPlayer(playerName);
 
-        console.log(`Player ${playerName} added.`);
-
         this.updateGame();
 
         const players = Array.from(this.game.blackholes.values());
@@ -74,15 +76,14 @@ export class ControllerGame
     private syncPlayer(socketId: number, jsondata)
     {
         try {
-            const data = JSON.parse(jsondata);
-
-            this.game.getBlackhole(data.player.name)?.fromData(data.player);
+            const data: PlayerDirectionData = JSON.parse(jsondata);
 
             this.updateGame();
 
-            this.server.emit("player sync", JSON.stringify({
-                player: data.player
-            }));
+            const player = this.game.getBlackhole(data.playerName);
+            player.direction.fromData(data.direction);
+
+            this.server.emit("sync player direction", JSON.stringify(data));
         }
         catch(e)
         {
@@ -101,5 +102,22 @@ export class ControllerGame
         }
 
         this.lastUpdate = performance.now();
+    }
+
+    /**
+     * Synchronizes all players coordinates with clients
+     */
+    private syncCoordinates()
+    {
+        this.updateGame();
+
+        const coordinates = Array.from(this.game.blackholes.values()).map((blackhole) => {
+            return {
+                playerName : blackhole.name,
+                coordinate: blackhole.coordinate.toData()
+            };
+        });
+
+        this.server.emit("sync players coordinates", JSON.stringify(coordinates));
     }
 }
